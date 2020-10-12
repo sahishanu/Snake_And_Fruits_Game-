@@ -1,5 +1,7 @@
 # include<iostream>
 #include<stdlib.h>
+#include <stdlib.h> 
+#include<time.h> 
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -20,7 +22,8 @@ Class game:
 
 class game 
 {
-	int length,width,head_x,head_y;
+	int length,width,head_x,head_y,fruit_x,fruit_y,snake_length;
+	char map[50][50];
 public:
 
 
@@ -28,11 +31,45 @@ game()
 {
 	length=30;
 	width=50;
+	snake_length=1;
 	head_x=1;
 	head_y=1;
+	create_fruit();
+	load_map();
+	
+}
+void create_fruit()
+{
+	 srand(time(0));
+	 fruit_x=max(1 , rand()%length-1);
+	 fruit_y=max(1 , rand()%width-1);
+	 map[fruit_x][fruit_y]='*';
+	
+}
+
+void load_map()
+{
+	for(int i=0;i<length;i++)
+	{
+		for(int j=0;j<width;j++)
+		{
+			if(i==0 || j==0 || i==length-1 || j==width-1)
+			{
+				map[i][j]='#';
+			}
+			else
+			{
+				map[i][j]=' ';
+			}
+		}
+	}
 }
 void change(char ch)
 {
+	int n=snake_length;
+	while(n--){
+	map[head_x][head_y]='$';
+	}
 	switch(ch)
 	{
 		case 'w':head_x=max(1,head_x-1);break;			// move up
@@ -40,6 +77,14 @@ void change(char ch)
 		case 'a':head_y=max(1,head_y-1);break;			// move left
 		case 'd':head_y=min(head_y+1,width-2);break;	//move right
 	}
+	if(map[head_x][head_y]=='*')
+	{
+		snake_length++;
+	}
+	map[head_x][head_y]='@';
+	
+	
+	
 }
 void display()
 {
@@ -47,20 +92,11 @@ void display()
 	{
 		for(int j=0;j<width;j++)
 		{
-			if(i==0 || i==length-1 || j==0 || j==width-1)
-			{
-				cout<<"#";//display boundry by '#'
-			}
-			
-			else if(i==head_x && j==head_y)
-			{
-				cout<<"@"; //display head by '@'
-			}
-			else
-			cout<<" "; // display air by ' '
+			cout<<map[i][j];
 		}
 		cout<<"\n";
 	}
+	cout<<"\n\n SCORE :"<<snake_length-1;
 }
 };
 
@@ -70,18 +106,30 @@ int main()
 {
 	game play;
 	
-	char ch=' ';
+	char ch=' ',ch_temp;
+	int fruit_time=0;
 	while(true)
 	{	if(kbhit()!=0)
 		{
-			ch=getchar();
-			if(ch=='q')
+			ch_temp=getchar();
+			if(ch_temp=='q')
 			break;
+			if(ch_temp=='w' || ch_temp=='s' || ch_temp=='a' || ch_temp=='d')
+			{
+				ch=ch_temp;
+			}
+			
+		}
+		if(fruit_time==50)
+		{
+			fruit_time=0;
+			play.create_fruit();
 		}
 		usleep(100000);
 		system("clear");
 		play.change(ch);
 		play.display();
+		fruit_time++;
 	}
 	
 
