@@ -14,7 +14,7 @@ int kbhit(void);
 /* 
 
 Class game:
-* --dimension of boundry length X width
+* --dimension of boundry length X width.
 * -- change(ch) gets char ch as argument and decide the direction of motion of snake head
 * -- display()  display in the screen the current state of the game
 
